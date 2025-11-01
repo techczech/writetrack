@@ -2,7 +2,7 @@
 
 **[Live Demo](http://writetrack.techczech.net)**
 
-![WriteTrack Dashboard Screenshot](./writetrackscreenshot.png)
+![WriteTrack Dashboard Screenshot](writetrackscreenshot.png)
 
 WriteTrack is a smart, standalone web application designed to help writers, editors, and creators track, analyze, and improve their writing habits. It combines a user-friendly interface with powerful AI features to provide a comprehensive toolkit for managing your writing life. All data is stored locally in your browser, ensuring your work remains private and accessible offline.
 
