@@ -70,7 +70,7 @@ function App() {
   const renderView = () => {
     switch (view.name) {
       case 'dashboard':
-        return <Dashboard onNewEntry={handleNewEntry} recentEntries={entries} onEditEntry={handleEditEntry} />;
+        return <Dashboard onNewEntry={handleNewEntry} entries={entries} onEditEntry={handleEditEntry} />;
       case 'newEntry':
         return <EntryEditor activityType={view.activityType} onSave={handleSaveEntry} onCancel={handleCancel} />;
       case 'editEntry':
@@ -82,7 +82,7 @@ function App() {
       case 'dataManager':
         return <DataManager onBack={handleCancel} entries={entries} setEntries={setEntries}/>;
       default:
-        return <Dashboard onNewEntry={handleNewEntry} recentEntries={entries} onEditEntry={handleEditEntry} />;
+        return <Dashboard onNewEntry={handleNewEntry} entries={entries} onEditEntry={handleEditEntry} />;
     }
   };
 
