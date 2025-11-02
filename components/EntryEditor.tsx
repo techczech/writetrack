@@ -158,6 +158,43 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
           </div>
         </header>
 
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Time Tracking</h3>
+                <div className="flex items-center space-x-2 text-sm">
+                    <label htmlFor="time-mode-manual">Manual</label>
+                    <div 
+                        onClick={() => setTimeInputMode(timeInputMode === 'manual' ? 'timer' : 'manual')}
+                        className={`relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer transition-colors ${timeInputMode === 'timer' ? 'bg-blue-600' : 'bg-gray-400 dark:bg-gray-600'}`}
+                    >
+                        <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${timeInputMode === 'timer' ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                    <label htmlFor="time-mode-timer">Timer</label>
+                </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {timeInputMode === 'manual' ? (
+                <div>
+                    <label className="block text-sm font-medium mb-1">Time Spent (minutes)</label>
+                    <Input
+                    type="number"
+                    name="time_spent_minutes"
+                    value={entry.time_spent_minutes}
+                    onChange={handleTimeChange}
+                    />
+                </div>
+                ) : (
+                <Timer
+                    onStop={handleTimerStop}
+                    onPause={handleTimerPause}
+                    onResume={handleTimerResume}
+                />
+                )}
+            </CardContent>
+        </Card>
+
         {isEditing && (
             <Card>
                 <CardContent>
@@ -225,42 +262,6 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
             </div>
 
             <div className="lg:col-span-1 space-y-4">
-                <Card>
-                    <CardHeader>
-                        <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Time Tracking</h3>
-                        <div className="flex items-center space-x-2 text-sm">
-                            <label htmlFor="time-mode-manual">Manual</label>
-                            <div 
-                                onClick={() => setTimeInputMode(timeInputMode === 'manual' ? 'timer' : 'manual')}
-                                className={`relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer transition-colors ${timeInputMode === 'timer' ? 'bg-blue-600' : 'bg-gray-400 dark:bg-gray-600'}`}
-                            >
-                                <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${timeInputMode === 'timer' ? 'translate-x-6' : 'translate-x-1'}`} />
-                            </div>
-                            <label htmlFor="time-mode-timer">Timer</label>
-                        </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        {timeInputMode === 'manual' ? (
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Time Spent (minutes)</label>
-                            <Input
-                            type="number"
-                            name="time_spent_minutes"
-                            value={entry.time_spent_minutes}
-                            onChange={handleTimeChange}
-                            />
-                        </div>
-                        ) : (
-                        <Timer
-                            onStop={handleTimerStop}
-                            onPause={handleTimerPause}
-                            onResume={handleTimerResume}
-                        />
-                        )}
-                    </CardContent>
-                </Card>
                 <Card>
                     <CardHeader>
                         <h3 className="text-lg font-semibold">AI Insights</h3>
