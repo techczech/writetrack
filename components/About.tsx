@@ -25,14 +25,21 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                         <li><strong>AI-Powered Titles & Summaries:</strong> Focus on your content and let our AI generate a fitting title for your entry. You can also generate concise summaries and thematic tags to better understand your work.</li>
                         <li><strong>Live Timer:</strong> Track your sessions in real-time with a built-in timer, complete with pause, resume, and full-screen modes. Pause events are automatically logged in your notes!</li>
                         <li><strong>Planning Assistant:</strong> Plan your writing schedule using natural language. Our AI will parse your plan into a structured schedule, which you can then export as an iCal file for your calendar.</li>
+                        <li><strong>Cloud Sync (Optional):</strong> Sign in with your Google account to securely save and sync your data across all your devices.</li>
                     </ul>
                     
-                    <h2 className="text-2xl font-semibold mt-6">Data Storage & Backup</h2>
+                    <h2 className="text-2xl font-semibold mt-6">Data Storage & Your Privacy</h2>
                     <p>
-                        <strong>Your data is stored entirely on your local device within your browser's local storage.</strong> It is not sent to any server. This means your work is private and accessible offline.
+                        WriteTrack offers two ways to store your data, putting you in control:
                     </p>
                     <p>
-                        However, this also means that clearing your browser data will erase your entries. To safeguard your work or move it to another device, please use the import and export features on the "Manage Data" page.
+                        <strong>1. Local-Only Mode (Default):</strong> By default, your data is stored entirely on your device within your browser's local storage. It is never sent to any server, ensuring complete privacy and offline access.
+                    </p>
+                    <p>
+                        <strong>2. Cloud Sync Mode (Optional):</strong> If you choose to sign in with your Google account, your data will be securely stored in your own private cloud database (Google Cloud Firestore). This allows you to access and sync your entries across multiple devices. Your data remains yours, protected by Google's security and accessible only to you.
+                    </p>
+                     <p>
+                        To safeguard your work, especially in local-only mode, please use the import and export features on the "Manage Data" page.
                     </p>
                 </CardContent>
             </Card>

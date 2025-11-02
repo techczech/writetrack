@@ -1,4 +1,3 @@
-
 export enum ActivityType {
   Writing = 'Writing',
   Editing = 'Editing',
@@ -53,3 +52,11 @@ export interface DailyPlan {
   plan_description: string;
   planned_activities: PlannedActivity[];
 }
+
+export type View = 
+  | { name: 'dashboard' }
+  | { name: 'newEntry'; activityType: ActivityType }
+  | { name: 'editEntry'; entry: WritingEntry }
+  | { name: 'planningAssistant' }
+  | { name: 'about' }
+  | { name: 'dataManager' };
