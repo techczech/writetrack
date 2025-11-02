@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import Button from './ui/Button';
 import Card, { CardContent, CardHeader } from './ui/Card';
 import { WritingEntry } from '../types';
+import { useAuth } from '../hooks/useAuth';
 
 interface DataManagerProps {
     onBack: () => void;
@@ -21,6 +22,7 @@ const isWritingEntry = (obj: any): obj is WritingEntry => {
 };
 
 const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }) => {
+    const { user } = useAuth();
     const importInputRef = useRef<HTMLInputElement>(null);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -51,6 +53,11 @@ const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }
     };
     
     const handleImportFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (user) {
+            setFeedback({ type: 'error', message: "Import is disabled while signed in to prevent data conflicts. Please sign out to import local data." });
+            return;
+        }
+
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -74,8 +81,6 @@ const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }
                 setEntries(prevEntries => {
                     const combined = [...prevEntries, ...importedEntries];
                     const uniqueMap = new Map<string, WritingEntry>();
-                    // Iterate in order so that imported entries with same ID would overwrite existing ones if needed,
-                    // but for additive, we reverse so existing entries are kept. Let's keep existing.
                     for (const entry of combined) {
                         if (!uniqueMap.has(entry.id)) {
                             uniqueMap.set(entry.id, entry);
@@ -109,6 +114,11 @@ const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }
             <Card>
                 <CardHeader><h2 className="text-xl font-bold">Export Your Data</h2></CardHeader>
                 <CardContent className="space-y-4">
+                    {user && (
+                        <p className="p-3 rounded-md bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-sm">
+                            You are signed in. Your data is automatically backed up and synced to the cloud. You can still export a local JSON copy if you wish.
+                        </p>
+                    )}
                     <p>
                         Download all your writing entries as a single JSON file. This is useful for creating backups or migrating your data to another device.
                     </p>
@@ -122,10 +132,10 @@ const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }
                 <CardHeader><h2 className="text-xl font-bold">Import Your Data</h2></CardHeader>
                 <CardContent className="space-y-4">
                      <p>
-                        Importing a file will add its entries to your current data. Entries with duplicate IDs will be ignored. It's always a good idea to export your current data first as a backup.
+                        Importing a file will add its entries to your current data. Entries with duplicate IDs will be ignored. <strong>Import is only available when you are signed out.</strong> This prevents conflicts with your cloud-synced data.
                     </p>
-                    <Button onClick={handleImportClick} variant="secondary" className="w-full sm:w-auto">
-                        Import Data from JSON
+                    <Button onClick={handleImportClick} variant="secondary" className="w-full sm:w-auto" disabled={!!user} title={user ? "Sign out to enable import" : "Import Data from JSON"}>
+                        {user ? 'Sign out to Import' : 'Import Data from JSON'}
                     </Button>
                     <input
                         type="file"
@@ -133,6 +143,7 @@ const DataManager: React.FC<DataManagerProps> = ({ onBack, entries, setEntries }
                         ref={importInputRef}
                         onChange={handleImportFile}
                         className="hidden"
+                        disabled={!!user}
                     />
                 </CardContent>
             </Card>
