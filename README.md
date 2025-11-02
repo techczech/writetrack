@@ -44,21 +44,41 @@ Your data privacy is paramount.
 
 ## How It Works: Technical Overview
 
-WriteTrack is built with a modern, client-side tech stack, ensuring a fast and responsive user experience without the need for a backend server.
-
 - **Frontend Framework:** Built with **React** and **TypeScript** for a robust and maintainable component-based architecture.
 - **Styling:** Styled with **Tailwind CSS** for a clean, responsive, and utility-first design.
 - **AI Integration:** Utilizes the **@google/genai** library to interact with the **Google Gemini API** for all AI-powered features.
-- **Data Persistence:** Employs a custom `useLocalStorage` React hook to seamlessly save and retrieve all application data from the browser's local storage.
-- **No Backend:** The application is fully self-contained and runs entirely in the browser.
+- **Cloud Sync & Auth:** Integrates with **Firebase Authentication** and **Cloud Firestore** for optional, secure cloud synchronization of user data.
+- **Data Persistence:** Employs a custom `useLocalStorage` React hook to seamlessly save and retrieve all application data from the browser's local storage for users who are not signed in.
+- **No Backend:** The application is fully self-contained and runs entirely in the browser, using Firebase as its Backend-as-a-Service (BaaS).
+
+## Configuration / Setup
+
+This application requires API keys for Google Gemini and Firebase to function correctly. To keep these keys secure and out of public source control, the app uses a configuration file that you create locally.
+
+**1. Create the Configuration File:**
+   - In the root of the project, find the file named `config.example.js`.
+   - **Make a copy of this file** and rename the copy to **`config.js`**.
+
+**2. Fill in your Secret Keys:**
+   - Open your new `config.js` file.
+   - Replace the placeholder values (e.g., `"PASTE_YOUR_..._HERE"`) with your actual secret keys from your Google Cloud and Firebase projects.
+
+**3. Deploy Your Application:**
+   - When you deploy your application to your hosting provider, make sure you include the `config.js` file you created.
+   - The `.gitignore` file is configured to prevent `config.js` from ever being committed to your public repository, keeping your keys safe.
+
+That's it! When the application loads, it will read your keys from `config.js` and all features will be enabled.
+
+You can find all the Firebase configuration values in your project's settings in the Firebase Console. You can get your Gemini API key from Google AI Studio.
 
 ## Getting Started
 
-1.  **Open the Application:** Simply open the `index.html` file in a modern web browser.
-2.  **Start a Session:** Click one of the six activity buttons on the dashboard to start a new entry.
-3.  **Write or Work:** Add your content in the main text area. The timer can be started to track your session live.
-4.  **Save Your Entry:** Click "Save Entry." A title will be automatically generated, and the entry will be saved to your local storage.
-5.  **Plan Your Week:** Navigate to the "Planning Assistant," describe your schedule, and export it to your calendar.
-6.  **Backup Your Data:** Go to the "About" page to export your data periodically for safekeeping.
+1.  **Configure API Keys:** Set up your `config.js` file as described above.
+2.  **Open the Application:** Simply open the `index.html` file in a modern web browser or deploy the project to a hosting service.
+3.  **Start a Session:** Click one of the six activity buttons on the dashboard to start a new entry.
+4.  **Write or Work:** Add your content in the main text area. The timer can be started to track your session live.
+5.  **Save Your Entry:** Click "Save Entry." A title will be automatically generated, and the entry will be saved.
+6.  **Plan Your Week:** Navigate to the "Planning Assistant," describe your schedule, and export it to your calendar.
+7.  **Backup Your Data:** Go to the "Manage Data" page to export your data periodically for safekeeping.
 
 This project was created to demonstrate the power of modern frontend tools and generative AI in creating practical, user-centric applications.

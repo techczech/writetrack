@@ -1,16 +1,21 @@
 
+
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { ActivityType, WritingEntry, PlannedActivity } from '../types';
 
-// This is a placeholder. In a real app, use environment variables.
-const API_KEY = process.env.API_KEY;
+// Fix: Remove redundant global declaration. The global `Window.APP_CONFIG` type
+// is now centrally managed in `types.ts` to prevent type conflicts.
+
+const API_KEY = window.APP_CONFIG?.API_KEY;
+
 if (!API_KEY) {
-  console.warn("API_KEY not found. AI features will be disabled.");
+  console.warn("Gemini API key not found in window.APP_CONFIG. AI features will be disabled. Make sure config.js is present and correctly configured.");
 }
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 export async function generateEntryTitle(content: string, activityType: ActivityType): Promise<string> {
-    if (!API_KEY || !content) {
+    if (!ai || !content) {
         return `Untitled ${activityType} Entry`;
     }
 
@@ -39,7 +44,7 @@ export async function generateEntryTitle(content: string, activityType: Activity
 
 
 export async function generateEntrySummary(entry: Omit<WritingEntry, 'id' | 'entry_date' | 'tags'>) {
-    if (!API_KEY) return { summary: "AI features disabled. No API key.", themes: [], suggested_tags: [] };
+    if (!ai) return { summary: "AI features disabled. No API key.", themes: [], suggested_tags: [] };
 
     const summaryPrompt = `Summarize this ${entry.activity_type} entry for a writing log.
 
@@ -92,7 +97,7 @@ export async function generateEntrySummary(entry: Omit<WritingEntry, 'id' | 'ent
 
 
 export async function parseMultiDayPlan(planDescription: string, startDate: string, endDate: string): Promise<Omit<PlannedActivity, 'id'>[]> {
-    if (!API_KEY) return [];
+    if (!ai) return [];
 
     const planParserPrompt = `Parse the following writing plan description into a series of structured activities scheduled between ${startDate} and ${endDate}.
 
