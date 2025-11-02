@@ -12,7 +12,8 @@ import Card, { CardContent, CardHeader } from './ui/Card';
 import Timer from './ui/Timer';
 
 interface EntryEditorProps {
-  activityType: ActivityType;
+  activityType?: ActivityType;
+  entryToEdit?: WritingEntry;
   onSave: (entry: WritingEntry) => void;
   onCancel: () => void;
 }
@@ -36,23 +37,35 @@ const getWritingTypeDefaults = (activityType: ActivityType): { default: string; 
     }
   };
 
-const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, onSave, onCancel }) => {
-  const { default: defaultWritingType, options: writingTypeOptions } = getWritingTypeDefaults(activityType);
+const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, onSave, onCancel }) => {
+  const isEditing = !!entryToEdit;
+  const initialActivityType = entryToEdit?.activity_type || activityType!;
+  
+  const { options: writingTypeOptions } = getWritingTypeDefaults(initialActivityType);
 
-  const [entry, setEntry] = useState<Omit<WritingEntry, 'id'>>({
-    entry_date: new Date().toISOString(),
-    activity_type: activityType,
-    writing_type: defaultWritingType,
-    status: EntryStatus.Completed,
-    title: '',
-    content: '',
-    notes: '',
-    word_count: 0,
-    time_spent_minutes: 0,
-    tags: [],
-    ai_summary: '',
-    ai_themes: [],
-  });
+  const createInitialState = (): WritingEntry => {
+    if (isEditing && entryToEdit) {
+        return { ...entryToEdit };
+    }
+    const { default: defaultWritingType } = getWritingTypeDefaults(activityType!);
+    return {
+        id: '', // Will be set on save
+        entry_date: new Date().toISOString(),
+        activity_type: activityType!,
+        writing_type: defaultWritingType,
+        status: EntryStatus.Completed,
+        title: '',
+        content: '',
+        notes: '',
+        word_count: 0,
+        time_spent_minutes: 0,
+        tags: [],
+        ai_summary: '',
+        ai_themes: [],
+    };
+  };
+
+  const [entry, setEntry] = useState<WritingEntry>(createInitialState());
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [timeInputMode, setTimeInputMode] = useState<'timer' | 'manual'>('timer');
@@ -95,12 +108,15 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, onSave, onCance
 
     setIsSaving(true);
     
-    const generatedTitle = await generateEntryTitle(entry.content, entry.activity_type);
-    
-    onSave({ ...entry, title: generatedTitle, id: new Date().toISOString() });
+    if (isEditing) {
+        onSave(entry);
+    } else {
+        const generatedTitle = await generateEntryTitle(entry.content, entry.activity_type);
+        onSave({ ...entry, title: generatedTitle, id: new Date().toISOString() });
+    }
   };
   
-  const activityInfo = ACTIVITY_TYPES[activityType];
+  const activityInfo = ACTIVITY_TYPES[initialActivityType];
 
   const handleTimerStop = (minutes: number) => {
     setEntry(prev => ({ ...prev, time_spent_minutes: minutes }));
@@ -126,17 +142,30 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, onSave, onCance
       <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <Badge colorClass={activityInfo.color} className="text-lg">{activityType}</Badge>
-            <h1 className="text-2xl md:text-4xl font-bold mt-2">New Entry</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">A title will be generated automatically based on the content when you save.</p>
+            <Badge colorClass={activityInfo.color} className="text-lg">{initialActivityType}</Badge>
+            <h1 className="text-2xl md:text-4xl font-bold mt-2">{isEditing ? 'Edit Entry' : 'New Entry'}</h1>
+            {!isEditing && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">A title will be generated automatically based on the content when you save.</p>
+            )}
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
             <Button type="submit" disabled={isSaving || !entry.content}>
-              {isSaving ? 'Generating Title & Saving...' : 'Save Entry'}
+              {isSaving 
+                ? (isEditing ? 'Updating...' : 'Saving...') 
+                : (isEditing ? 'Update Entry' : 'Save Entry')}
             </Button>
           </div>
         </header>
+
+        {isEditing && (
+            <Card>
+                <CardContent>
+                    <label htmlFor="title-input" className="block text-sm font-medium mb-1">Title</label>
+                    <Input id="title-input" name="title" value={entry.title} onChange={handleInputChange} />
+                </CardContent>
+            </Card>
+        )}
 
         <Card>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
