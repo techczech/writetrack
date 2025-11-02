@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ActivityType, EntryStatus, WritingEntry } from '../types';
-import { ACTIVITY_TYPES } from '../constants';
+import { ACTIVITY_TYPES, SettingsIcon } from '../constants';
 import Button from './ui/Button';
 import Input from './ui/Input';
 import Textarea from './ui/Textarea';
@@ -10,6 +10,7 @@ import { generateEntrySummary, generateEntryTitle } from '../services/geminiServ
 import { useDebounce } from '../hooks/useDebounce';
 import Card, { CardContent, CardHeader } from './ui/Card';
 import Timer from './ui/Timer';
+import useTimerSettings from '../hooks/useTimerSettings';
 
 interface EntryEditorProps {
   activityType?: ActivityType;
@@ -69,6 +70,8 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [timeInputMode, setTimeInputMode] = useState<'timer' | 'manual'>('timer');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [timerSettings, setTimerSettings] = useTimerSettings();
 
   const calculateWordCount = (text: string): number => {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -161,17 +164,25 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
         <Card>
             <CardHeader>
                 <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Time Tracking</h3>
-                <div className="flex items-center space-x-2 text-sm">
-                    <label htmlFor="time-mode-manual">Manual</label>
-                    <div 
-                        onClick={() => setTimeInputMode(timeInputMode === 'manual' ? 'timer' : 'manual')}
-                        className={`relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer transition-colors ${timeInputMode === 'timer' ? 'bg-blue-600' : 'bg-gray-400 dark:bg-gray-600'}`}
-                    >
-                        <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${timeInputMode === 'timer' ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-semibold">Time Tracking</h3>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setIsSettingsOpen(true)} className="p-1 h-auto" aria-label="Timer Settings">
+                            <SettingsIcon className="w-5 h-5" />
+                        </Button>
                     </div>
-                    <label htmlFor="time-mode-timer">Timer</label>
-                </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                        <label>Manual</label>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={timeInputMode === 'timer'}
+                            onClick={() => setTimeInputMode(timeInputMode === 'manual' ? 'timer' : 'manual')}
+                            className={`relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer transition-colors ${timeInputMode === 'timer' ? 'bg-blue-600' : 'bg-gray-400 dark:bg-gray-600'}`}
+                        >
+                            <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${timeInputMode === 'timer' ? 'translate-x-6' : 'translate-x-1'}`} />
+                        </button>
+                        <label>Timer</label>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>
@@ -190,6 +201,7 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
                     onStop={handleTimerStop}
                     onPause={handleTimerPause}
                     onResume={handleTimerResume}
+                    initialDuration={!isEditing ? timerSettings[initialActivityType] : undefined}
                 />
                 )}
             </CardContent>
@@ -316,6 +328,50 @@ const EntryEditor: React.FC<EntryEditorProps> = ({ activityType, entryToEdit, on
             </div>
         </div>
       </form>
+
+      {isSettingsOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true">
+            <Card className="w-full max-w-md">
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-xl font-bold">Default Timer Durations</h2>
+                        <Button variant="ghost" onClick={() => setIsSettingsOpen(false)} aria-label="Close Settings">X</Button>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-4 max-h-[70vh] overflow-y-auto">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Set a default work duration (in minutes) for each activity. This will be automatically set as a goal when you start a new entry.</p>
+                    {Object.values(ActivityType).map(type => (
+                        <div key={type} className="flex items-center justify-between gap-4">
+                            <label htmlFor={`timer-default-${type}`} className="font-medium">{type}</label>
+                            <Input
+                                id={`timer-default-${type}`}
+                                type="number"
+                                className="w-28"
+                                placeholder="Minutes"
+                                min="0"
+                                value={timerSettings[type] ?? ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setTimerSettings(prev => {
+                                        const newSettings = { ...prev };
+                                        if (value === '') {
+                                            delete newSettings[type];
+                                        } else {
+                                            const numValue = parseInt(value, 10);
+                                            if (!isNaN(numValue) && numValue >= 0) {
+                                                newSettings[type] = numValue;
+                                            }
+                                        }
+                                        return newSettings;
+                                    });
+                                }}
+                            />
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
+    )}
     </div>
   );
 };
