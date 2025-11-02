@@ -1,0 +1,39 @@
+# =========================================
+# SECRET KEYS & CONFIGURATION
+# =========================================
+# Ignore the .env file for local development (if used).
+.env
+
+# Ignore the client-side config file containing secret API keys.
+# This is a critical security measure.
+config.js
+
+
+# =========================================
+# DEPENDENCIES
+# =========================================
+# Ignore local dependency folders.
+node_modules
+
+
+# =========================================
+# BUILD OUTPUT
+# =========================================
+# Ignore common build directories.
+dist
+build
+
+
+# =========================================
+# IDE & EDITOR CONFIGURATION
+# =========================================
+# Ignore editor-specific settings folders.
+.vscode
+.idea
+
+
+# =========================================
+# OPERATING SYSTEM FILES
+# =========================================
+# Ignore macOS specific files.
+.DS_Store

@@ -60,3 +60,19 @@ export type View =
   | { name: 'planningAssistant' }
   | { name: 'about' }
   | { name: 'dataManager' };
+
+// Fix: Consolidate all APP_CONFIG properties into a single global declaration
+// to resolve TypeScript errors about subsequent property declarations.
+declare global {
+  interface Window {
+    APP_CONFIG?: {
+      API_KEY?: string;
+      FIREBASE_API_KEY?: string;
+      FIREBASE_AUTH_DOMAIN?: string;
+      FIREBASE_PROJECT_ID?: string;
+      FIREBASE_STORAGE_BUCKET?: string;
+      FIREBASE_MESSAGING_SENDER_ID?: string;
+      FIREBASE_APP_ID?: string;
+    };
+  }
+}
