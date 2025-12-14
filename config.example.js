@@ -7,6 +7,8 @@
 // --- INSTRUCTIONS ---
 // 1. Make a copy of this file and rename it to `config.js`.
 // 2. Fill in the placeholder values (`"PASTE_YOUR_..._HERE"`) with your actual keys.
+//    - Gemini API Key: https://aistudio.google.com/app/apikey
+//    - Firebase Keys: Project Settings in Firebase Console
 // 3. Make sure the `config.js` file is included in your deployment, but DO NOT
 //    commit it to your public GitHub repository. The `.gitignore` file is already
 //    set up to ignore `config.js` for you.
@@ -14,10 +16,9 @@
 // =================================================================================
 
 window.APP_CONFIG = {
-  // --- Google Gemini API Key ---
-  // This key is for the AI features like title generation and summaries.
-  // You can get this from Google AI Studio.
-  API_KEY: "PASTE_YOUR_GEMINI_API_KEY_HERE",
+  // --- Google Gemini Configuration ---
+  // Provide your Google Gemini API Key here.
+  GEMINI_API_KEY: "PASTE_YOUR_GEMINI_API_KEY_HERE",
 
   // --- Firebase Configuration ---
   // Copy these values directly from the firebaseConfig object in your
