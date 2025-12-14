@@ -4,7 +4,7 @@
 
 ![WriteTrack Dashboard Screenshot](./writetrackscreenshot.png)
 
-WriteTrack is a smart, standalone web application designed to help writers, editors, and creators track, analyze, and improve their writing habits. It combines a user-friendly interface with powerful AI features to provide a comprehensive toolkit for managing your writing life. All data is stored locally in your browser, ensuring your work remains private and accessible offline.
+WriteTrack is a smart, standalone web application designed to help writers, editors, and creators track, analyze, and improve your writing habits. It combines a user-friendly interface with powerful AI features to provide a comprehensive toolkit for managing your writing life. All data is stored locally in your browser, ensuring your work remains private and accessible offline.
 
 Note: This app was vibecoded by Dominik Lukes using Google AI Studio. 
 
@@ -46,30 +46,46 @@ Your data privacy is paramount.
 
 - **Frontend Framework:** Built with **React** and **TypeScript** for a robust and maintainable component-based architecture.
 - **Styling:** Styled with **Tailwind CSS** for a clean, responsive, and utility-first design.
-- **AI Integration:** Utilizes the **@google/genai** library to interact with the **Google Gemini API** for all AI-powered features.
+- **AI Integration:** AI features are powered by the **Google Gemini API**, accessed directly from the browser using the `@google/genai` SDK.
 - **Cloud Sync & Auth:** Integrates with **Firebase Authentication** and **Cloud Firestore** for optional, secure cloud synchronization of user data.
 - **Data Persistence:** Employs a custom `useLocalStorage` React hook to seamlessly save and retrieve all application data from the browser's local storage for users who are not signed in.
-- **No Backend:** The application is fully self-contained and runs entirely in the browser, using Firebase as its Backend-as-a-Service (BaaS).
+- **Architecture:** The application is a static frontend that connects to Firebase for data storage.
 
 ## Configuration / Setup
 
-This application requires API keys for Google Gemini and Firebase to function correctly. To keep these keys secure and out of public source control, the app uses a configuration file that you create locally.
+This application requires API keys for Firebase to enable cloud sync and authentication, and a Gemini API key for AI features.
 
 **1. Create the Configuration File:**
    - In the root of the project, find the file named `config.example.js`.
    - **Make a copy of this file** and rename the copy to **`config.js`**.
 
-**2. Fill in your Secret Keys:**
+**2. Fill in your API Keys:**
    - Open your new `config.js` file.
-   - Replace the placeholder values (e.g., `"PASTE_YOUR_..._HERE"`) with your actual secret keys from your Google Cloud and Firebase projects.
+   - **Gemini API:** Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey) and paste it into `GEMINI_API_KEY`.
+   - **Firebase:** Replace the placeholder values for the `FIREBASE_...` keys with your actual keys from your Firebase project settings.
 
-**3. Deploy Your Application:**
-   - When you deploy your application to your hosting provider, make sure you include the `config.js` file you created.
-   - The `.gitignore` file is configured to prevent `config.js` from ever being committed to your public repository, keeping your keys safe.
+## Security & Deployment (CRITICAL)
 
-That's it! When the application loads, it will read your keys from `config.js` and all features will be enabled.
+Because this is a client-side application, your API keys are technically visible to the browser. To prevent others from using your quota, **you must restrict your keys in the Google Cloud Console.**
 
-You can find all the Firebase configuration values in your project's settings in the Firebase Console. You can get your Gemini API key from Google AI Studio.
+**1. Secure your Gemini API Key:**
+   1. Go to the [Google Cloud Console Credentials Page](https://console.cloud.google.com/apis/credentials).
+   2. Find your Gemini API Key and click the **Edit** (pencil) icon.
+   3. Under **Application restrictions**, select **Websites (HTTP referrers)**.
+   4. Add your domains:
+      - `http://localhost:8000/*` (for local testing)
+      - `https://your-firebase-project.web.app/*` (your deployed app)
+      - `https://your-custom-domain.com/*` (if applicable)
+   5. Under **API restrictions**, select **Restrict key** and choose **Generative Language API**.
+   6. Click **Save**.
+
+**2. Deploying to Firebase:**
+   1. Install Firebase tools: `npm install -g firebase-tools`
+   2. Login: `firebase login`
+   3. Initialize: `firebase init hosting` (Select your project, use `.` as the public directory, configure as single-page app).
+   4. Deploy: `firebase deploy --only hosting`
+
+**Note:** The `.gitignore` file is configured to prevent `config.js` from ever being committed to your public repository, keeping your keys safe from source control scrapers.
 
 ## Getting Started
 

@@ -2,6 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
+import { initializeFirebase } from './services/firebase';
+
+// Since config.js is now loaded synchronously in the <head>,
+// we can safely initialize Firebase immediately when this module executes.
+initializeFirebase();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
